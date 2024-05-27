@@ -20,11 +20,13 @@ userRouter.get('/protected', async (req: Request, res: Response) => {
 userRouter.post('/login', (req: Request, res: Response) => {
     passport.authenticate('local', (err, user, info, status) => {
         if(!user) {
+            console.log(err);
             return res.sendStatus(401);
         }
 
         req.login(user, (err) => {
             if(err) {
+                console.error("Error logging in");
                 return res.sendStatus(401);
             }
 

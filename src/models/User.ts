@@ -1,11 +1,13 @@
-import { Table, Column, Model, PrimaryKey, DataType } from 'sequelize-typescript';
+import { Model, Table, Column, PrimaryKey, DataType, BeforeCreate } from 'sequelize-typescript';
+import bcryptjs from 'bcryptjs';
 
-@Table({})
+@Table
 class User extends Model {
     @Column({
         primaryKey: true,
         type: DataType.UUID,
-        defaultValue: DataType.UUIDV4
+        defaultValue: DataType.UUIDV4,
+        unique: true
     })
     id!: number;
 
@@ -24,6 +26,12 @@ class User extends Model {
 
     @Column({})
     password!: string;
+
+    @BeforeCreate
+    static async generatePasswordHash(user: User) {
+        const hashedPassword: string = await bcryptjs.hash(user.password, 10);
+        user.password = hashedPassword;
+    }
 }
 
 export default User;

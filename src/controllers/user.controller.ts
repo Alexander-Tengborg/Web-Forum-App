@@ -25,6 +25,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     //What happens if we get some error and the user does not get created?
     const createdUser = await User.create(req.body);
+    
     if(createdUser) {
         return res.status(201).send("Created");
         // return res.sendStatus(201);

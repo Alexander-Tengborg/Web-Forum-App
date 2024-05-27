@@ -5,6 +5,7 @@ import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import session from 'express-session';
 import cors from 'cors';
+import bcryptjs from 'bcryptjs';
 
 import userRouter from "./routes/user.routes";
 
@@ -32,9 +33,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(new LocalStrategy.Strategy(async (_username, _password, done) => {
-    const result = await User.findOne({where: {username: _username, password: _password}});
-    if(result) {
-        return done(null, result);
+    const user = await User.findOne({where: {username: _username}});
+    if(user) {
+        const passwordMatches = await bcryptjs.compare(_password, user.password);
+
+        if(passwordMatches) {
+            return done(null, user);
+        }
+        return done(null, false);
     }
     done(null, false);
 }));
@@ -62,6 +68,7 @@ app.use('/user', userRouter);
     try {
         await database.sync();
         // await database.sync({alter: true});
+        // await database.sync({force: true});
         app.listen(process.env.API_LISTENING_PORT, () => {
             console.log(`Server is running on http://localhost:${process.env.API_LISTENING_PORT}`);
         });
