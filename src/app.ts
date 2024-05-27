@@ -2,15 +2,12 @@ import 'dotenv/config';
 
 import express, { Express, Request, Response } from "express";
 import passport from 'passport';
-import LocalStrategy from 'passport-local';
 import session from 'express-session';
 import cors from 'cors';
-import bcryptjs from 'bcryptjs';
 
 import userRouter from "./routes/user.routes";
-
 import database from './database';
-import User from './models/User';
+import { serializeUser, deserializeUser, localStrategy } from './passport.config';
 
 const app: Express = express();
 
@@ -19,7 +16,7 @@ app.use(cors());
 
 app.use(session({
     name: "session",
-    secret: process.env.SESSION_SECRET || "ADD SECRET HERE OR TO AS AN ENVIRONMENT VARIABLE",
+    secret: process.env.SESSION_SECRET || "ADD SECRET HERE OR AS AN ENVIRONMENT VARIABLE",
     resave: true,
     saveUninitialized: false,
     cookie: {
@@ -32,38 +29,13 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(new LocalStrategy.Strategy(async (_username, _password, done) => {
-    const user = await User.findOne({where: {username: _username}});
-    if(user) {
-        const passwordMatches = await bcryptjs.compare(_password, user.password);
-
-        if(passwordMatches) {
-            return done(null, user);
-        }
-        return done(null, false);
-    }
-    done(null, false);
-}));
-
-//FIX user: any
-passport.serializeUser((user: any, done) => {
-    done(null, {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-    })
-});
-
-passport.deserializeUser((user: any, done) => {
-        done(null, user);
-});
-
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World!');
-});
+passport.use(localStrategy());
+passport.serializeUser((user: any, done) => serializeUser(user, done));
+passport.deserializeUser((user: any, done) => deserializeUser(user, done));
 
 app.use('/user', userRouter);
 
+//Syncs the database and runs the server
 (async () => {
     try {
         await database.sync();

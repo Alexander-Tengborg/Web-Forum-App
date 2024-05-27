@@ -1,25 +1,17 @@
 import { Request, Response } from "express";
+import passport from "passport";
+import { isEmail, isStrongPassword } from "validator";
+import { Op } from "sequelize";
 
 import User from "../models/User";
 
-import { isEmail, isStrongPassword } from "validator";
-
 export const registerUser = async (req: Request, res: Response) => {
     if(!isEmail(req.body.email) || !isStrongPassword(req.body.password)) {
-        // return res.status(400).send("Bad Request");
         return res.sendStatus(400);
     }
 
-    //Can use Op.or and do both of the following queries in one instead
-    const emailExists = await User.findOne({where: { email: req.body.email }});
-    if(emailExists) {
-        // return res.status(418).send("I'm a teapot");
-        return res.sendStatus(418);
-    }
-
-    const usernameExists = await User.findOne({where: { username: req.body.username }});
-    if(usernameExists) {
-        // return res.status(418).send("I'm a teapot");
+    const emailOrUsernameExists = await User.findOne({where: {[Op.or]: [{ email: req.body.email }, { username: req.body.username }]}});
+    if(emailOrUsernameExists) {
         return res.sendStatus(418);
     }
 
@@ -28,10 +20,25 @@ export const registerUser = async (req: Request, res: Response) => {
     
     if(createdUser) {
         return res.status(201).send("Created");
-        // return res.sendStatus(201);
     }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+//check err instead of user
+export const loginUser = (req: Request, res: Response) => {
+    passport.authenticate('local', (err, user, info, status) => {
+        if(!user) {
+            console.log(err);
+            return res.sendStatus(401);
+        }
 
+        req.login(user, (err) => {
+            if(err) {
+                console.error("Error logging in");
+                return res.sendStatus(401);
+            }
+
+            res.sendStatus(200);
+        })
+
+    })(req, res);
 };

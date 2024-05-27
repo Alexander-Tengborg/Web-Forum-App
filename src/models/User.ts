@@ -1,4 +1,4 @@
-import { Model, Table, Column, PrimaryKey, DataType, BeforeCreate } from 'sequelize-typescript';
+import { Model, Table, Column, DataType, BeforeCreate } from 'sequelize-typescript';
 import bcryptjs from 'bcryptjs';
 
 @Table
@@ -24,7 +24,7 @@ class User extends Model {
     })
     username!: string;
 
-    @Column({})
+    @Column
     password!: string;
 
     @BeforeCreate
