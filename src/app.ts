@@ -45,9 +45,9 @@ app.use('/thread', threadRouter);
 //Syncs the database and runs the server
 (async () => {
     try {
-        // await database.sync();
+        await database.sync();
         // await database.sync({alter: true});
-        await database.sync({force: true});
+        // await database.sync({force: true});
         const defaultCategory = await Category.findOne({where: {category_name: 'Default'}});
         if(!defaultCategory)
             await Category.create({category_name: 'Default'});

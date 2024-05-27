@@ -1,6 +1,7 @@
-import { Model, Table, Column, DataType, BeforeCreate, BelongsTo, ForeignKey, UpdatedAt, AllowNull } from 'sequelize-typescript';
+import { Model, Table, Column, DataType, BeforeCreate, BelongsTo, ForeignKey, UpdatedAt, AllowNull, HasMany } from 'sequelize-typescript';
 import Category from './Category';
 import User from './User';
+import Post from './Post';
 
 @Table({updatedAt: false})
 class Thread extends Model {
@@ -18,11 +19,17 @@ class Thread extends Model {
     })
     title!: string;
 
+    @Column({
+        type: DataType.TEXT,
+        allowNull: false
+    })
+    text!: string;
+
     @Column
     @ForeignKey(() => Category)
     category!: string;
 
-    @BelongsTo(() => Category,  )
+    @BelongsTo(() => Category, 'category')
     category_info!: Category
 
     @Column
@@ -32,6 +39,8 @@ class Thread extends Model {
     @BelongsTo(() => User, 'author')
     author_info!: User
 
+    @HasMany(() => Post, 'threadId')
+    posts!: Post[];
 }
 
 export default Thread;

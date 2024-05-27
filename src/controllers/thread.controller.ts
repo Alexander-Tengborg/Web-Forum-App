@@ -18,6 +18,7 @@ export const createThread = async (req: Request, res: Response) => {
 
     threadSettings.category = category.category_name;
     threadSettings.author = req.user;
+    threadSettings.text = req.body.openingPost.text;
     // threadSettings.
 
 
