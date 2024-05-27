@@ -7,5 +7,6 @@ export default new Sequelize({
     database: process.env.DB_NAME,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    models: [__dirname + "/models"]
+    models: [__dirname + "/models"],
+    logging: false
 });
