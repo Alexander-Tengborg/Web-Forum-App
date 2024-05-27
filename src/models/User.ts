@@ -14,17 +14,22 @@ class User extends Model {
     @Column({
         type: DataType.STRING,
         validate: {isEmail: true},
-        unique: true
+        unique: true,
+        allowNull: false
     })
     email!: string;
 
     @Column({
         type: DataType.STRING,
-        unique: true
+        unique: true,
+        allowNull: false
     })
     username!: string;
 
-    @Column
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
     password!: string;
 
     @BeforeCreate
