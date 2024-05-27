@@ -1,10 +1,10 @@
-import { Model, Table, Column, DataType, BeforeCreate } from 'sequelize-typescript';
+import { Model, Table, Column, DataType, BeforeCreate, HasMany } from 'sequelize-typescript';
 import bcryptjs from 'bcryptjs';
+import Thread from './Thread';
 
-@Table
+@Table({updatedAt: false})
 class User extends Model {
     @Column({
-        primaryKey: true,
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
         unique: true
@@ -20,6 +20,7 @@ class User extends Model {
     email!: string;
 
     @Column({
+        primaryKey: true,
         type: DataType.STRING,
         unique: true,
         allowNull: false
@@ -31,6 +32,9 @@ class User extends Model {
         allowNull: false
     })
     password!: string;
+
+    @HasMany(() => Thread, 'author')
+    threads!: Thread[];
 
     @BeforeCreate
     static async generatePasswordHash(user: User) {

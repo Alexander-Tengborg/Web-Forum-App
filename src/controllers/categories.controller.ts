@@ -1,7 +1,4 @@
 import { Request, Response } from "express";
-import passport from "passport";
-import { isEmail, isStrongPassword } from "validator";
-import { Op } from "sequelize";
 
 import Category from '../models/Category'
 

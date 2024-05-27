@@ -1,9 +1,10 @@
-import { Model, Table, Column, DataType, BeforeCreate } from 'sequelize-typescript';
+import { Model, Table, Column, DataType, BeforeCreate, HasMany } from 'sequelize-typescript';
 
-@Table
+import Thread from './Thread';
+
+@Table({updatedAt: false})
 class Category extends Model {
     @Column({
-        primaryKey: true,
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
         unique: true
@@ -11,11 +12,15 @@ class Category extends Model {
     id!: number;
 
     @Column({
+        primaryKey: true,
         type: DataType.STRING,
         unique: true,
         allowNull: false
     })
     category_name!: string;
+
+    @HasMany(() => Thread, 'category')
+    threads!: Thread[];
 }
 
 export default Category;

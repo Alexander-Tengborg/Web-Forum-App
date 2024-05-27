@@ -33,12 +33,16 @@ export const localStrategy = () => {
 }
 
 //FIX user: any
+// export const serializeUser = (user: any, done) => {
+//     done(null, {
+//         id: user.id,
+//         email: user.email,
+//         username: user.username,
+//     })
+// }
+
 export const serializeUser = (user: any, done) => {
-    done(null, {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-    })
+    done(null, user.username);
 }
 
 export const deserializeUser = (user: any, done) => {

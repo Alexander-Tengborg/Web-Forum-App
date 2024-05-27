@@ -7,6 +7,8 @@ import cors from 'cors';
 
 import userRouter from "./routes/user.routes";
 import categoriesRouter from './routes/categories.routes';
+import threadRouter from './routes/thread.routes';
+
 import database from './database';
 import { serializeUser, deserializeUser, localStrategy } from './passport.config';
 import Category from './models/Category';
@@ -37,16 +39,18 @@ passport.deserializeUser((user: any, done) => deserializeUser(user, done));
 
 app.use('/user', userRouter);
 app.use('/categories', categoriesRouter);
+app.use('/thread', threadRouter);
+
 
 //Syncs the database and runs the server
 (async () => {
     try {
-        await database.sync();
+        // await database.sync();
+        // await database.sync({alter: true});
+        await database.sync({force: true});
         const defaultCategory = await Category.findOne({where: {category_name: 'Default'}});
         if(!defaultCategory)
             await Category.create({category_name: 'Default'});
-        // await database.sync({alter: true});
-        // await database.sync({force: true});
         app.listen(process.env.API_LISTENING_PORT, () => {
             console.log(`Server is running on http://localhost:${process.env.API_LISTENING_PORT}`);
         });
