@@ -9,6 +9,7 @@ import userRouter from "./routes/user.routes";
 import categoriesRouter from './routes/categories.routes';
 import database from './database';
 import { serializeUser, deserializeUser, localStrategy } from './passport.config';
+import Category from './models/Category';
 
 const app: Express = express();
 
@@ -41,6 +42,9 @@ app.use('/categories', categoriesRouter);
 (async () => {
     try {
         await database.sync();
+        const defaultCategory = await Category.findOne({where: {category_name: 'Default'}});
+        if(!defaultCategory)
+            await Category.create({category_name: 'Default'});
         // await database.sync({alter: true});
         // await database.sync({force: true});
         app.listen(process.env.API_LISTENING_PORT, () => {
