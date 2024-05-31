@@ -21,6 +21,22 @@ SESSION_SECRET=
 ```
 
 ## Commands
+### Docker
+First build the Docker container using the command
+```
+docker build -t web-forum-app .
+```
+**web-forum-app** specifies the name of the container, any non-capital name can be used.
+
+The Docker container can then be started with the following command
+```
+docker run -it -p 80:8080 web-forum-app
+```
+Replace **web-forum-app** with the name of your container that you chose when building the container.
+
+The node server runs on port 8080, but with this command it will be mapped to port 80 on your computer, meaning that you can access the server at [localhost:80](http://localhost:80) if you are running it locally. You can use any other port by replacing **-p 80:8080** with **-p PORT:8080** where **PORT** is your desired port.
+
+### Running without Docker
 Install all dependencies by running
 ```
 npm install
