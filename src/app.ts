@@ -9,6 +9,7 @@ import userRouter from "./routes/user.routes";
 import categoriesRouter from './routes/categories.routes';
 import threadRouter from './routes/thread.routes';
 import searchRouter from './routes/search.routes';
+import csvRouter from './routes/csv.routes';
 
 import database from './database';
 import { serializeUser, deserializeUser, localStrategy } from './passport.config';
@@ -16,7 +17,7 @@ import Category from './models/Category';
 
 const app: Express = express();
 
-app.use(express.json())
+app.use(express.json());
 app.use(cors());
 
 app.use(session({
@@ -42,7 +43,7 @@ app.use('/user', userRouter);
 app.use('/categories', categoriesRouter);
 app.use('/thread', threadRouter);
 app.use('/search', searchRouter);
-
+app.use('/csv', csvRouter);
 
 //Syncs the database and runs the server
 (async () => {

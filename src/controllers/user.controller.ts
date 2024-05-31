@@ -5,8 +5,10 @@ import { Op } from "sequelize";
 
 import User from "../models/User";
 
+import { validateUserData } from '../utils/user.utils';
+
 export const registerUser = async (req: Request, res: Response) => {
-    if(!req.body.email || !req.body.username || !req.body.password || !isEmail(req.body.email) || req.body.length < 5 || !isStrongPassword(req.body.password)) {
+    if(!validateUserData(req.body.email, req.body.username, req.body.password)) {
         return res.sendStatus(400);
     }
 
