@@ -1,5 +1,6 @@
 import { Model, Table, Column, DataType, BeforeCreate, HasMany } from 'sequelize-typescript';
 import bcryptjs from 'bcryptjs';
+
 import Thread from './Thread';
 import Post from './Post';
 

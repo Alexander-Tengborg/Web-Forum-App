@@ -1,5 +1,5 @@
-import { Model, Table, Column, DataType, BeforeCreate, BelongsTo, ForeignKey, UpdatedAt, AllowNull } from 'sequelize-typescript';
-import Category from './Category';
+import { Model, Table, Column, DataType, BelongsTo, ForeignKey } from 'sequelize-typescript';
+
 import User from './User';
 import Thread from './Thread';
 

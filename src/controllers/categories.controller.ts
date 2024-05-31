@@ -3,43 +3,42 @@ import { Request, Response } from "express";
 import Category from '../models/Category'
 
 export const createCategories = async (req: Request, res: Response) => {
-    if(!req.body.categories || !req.body.categories.length) {
+    if(!req.body.categories || !req.body.categories.length)
         return res.sendStatus(400);
-    }
     
-    if(!Array.isArray(req.body.categories)) {
+    //If we get a string category, convert it to an array
+    if(!Array.isArray(req.body.categories))
         req.body.categories = [req.body.categories];
-    }
 
-    for(const _category_name of req.body.categories) {
-        const category = await Category.findOne({where: {category_name: _category_name}})
-        if(category) {
+    //Returns 400 if any category already exists
+    for(const category_name of req.body.categories) {
+        const category: Category | null = await Category.findOne({where: {category_name: category_name}})
+
+        if(category)
             return res.sendStatus(400);
-        }
     };
 
-    req.body.categories.forEach(async category => {
+    req.body.categories.forEach(async (category: string) => {
         await Category.create({category_name: category});
     });
 
-    res.sendStatus(201);
+    return res.sendStatus(201);
 }
 
 export const getCategories = async (req: Request, res: Response) => {
-    const categories = await Category.findAll();
+    const categories: Category[] | null = await Category.findAll();
 
-    res.json(categories);
+    return res.json(categories);
 }
 
 export const deleteCategory = async (req: Request, res: Response) => {
-    if(req.query.category === 'Default') {
+    if(req.query.category === 'Default')
         return res.sendStatus(400);
-    }
 
-    const result = await Category.destroy({where: {category_name: req.query.category}});
-    if(!result) {
+    const result: number = await Category.destroy({where: {category_name: req.query.category}});
+
+    if(!result)
         return res.sendStatus(400);
-    }
 
-    res.sendStatus(200);
+    return res.sendStatus(200);
 }

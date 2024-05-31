@@ -1,30 +1,36 @@
 import { Request, Response } from "express";
-
+import { Op } from 'sequelize';
 
 import Category from '../models/Category'
 import Thread from "../models/Thread";
 
-import { Op } from 'sequelize';
+//TODO MOVE/REMOVE?
+interface CreateThreadQuery {
+    category: string,
+    author: string,
+    text: string
+};
 
+//TODO fix user!
 export const createThread = async (req: Request, res: Response) => {
-    if(!req.body.category || !req.body.title || !req.body.openingPost || !req.body.openingPost.text || req.body.title.length == 0) {
+    if(!req.body.category || !req.body.title || !req.body.openingPost || !req.body.openingPost.text || req.body.title.length == 0)
         return res.sendStatus(400);
-    }
 
-    const category = await Category.findOne({where: {category_name: req.body.category}});
-    if(!category) {
+    const category: Category | null = await Category.findOne({where: {category_name: req.body.category}});
+
+    if(!category)
         return res.sendStatus(404);
-    }
 
-    let threadSettings = req.body;
+    let threadSettings: CreateThreadQuery = {
+        category: category.category_name,
+        author: req.user!.username,
+        text: req.body.openingPost.text
+    };
 
-    threadSettings.category = category.category_name;
-    threadSettings.author = req.user;
-    threadSettings.text = req.body.openingPost.text;
 
-    const thread = await Thread.create(threadSettings);
+    await Thread.create({ ...threadSettings });
 
-    res.send(thread);
+    return res.sendStatus(201);
 }
 
 export const getThreads = async (req: Request, res: Response) => {
@@ -33,11 +39,11 @@ export const getThreads = async (req: Request, res: Response) => {
     if(req.query.categories) {
         let categories: any;
 
-        if(typeof req.query.categories === 'string') {
+        if(typeof req.query.categories === 'string')
             categories = [req.query.categories]; 
-        } else {
+        else
             categories = req.query.categories;
-        }
+        
         
         query['where']['category'] = {
             [Op.in]: categories
@@ -46,26 +52,25 @@ export const getThreads = async (req: Request, res: Response) => {
 
     if(req.query.author) {
         let authors: any;
-        if(typeof req.query.author === 'string') {
+        if(typeof req.query.author === 'string')
             authors = [req.query.author]; 
-        } else {
+        else
             authors = req.query.author;
-        }
+        
         
         query['where']['author'] = {
             [Op.in]: authors
         };
     }
 
-    if(req.query.newest_first == 'true') {
+    if(req.query.newest_first == 'true')
         query['order'] = [
             ['id', 'DESC']
         ];
-    } else {
+    else
         query['order'] = [
             ['id', 'ASC']
-        ];  
-    }
+        ];
 
     if(
         req.query.page_size && typeof req.query.page_size === 'string' && parseInt(req.query.page_size) &&
@@ -75,20 +80,19 @@ export const getThreads = async (req: Request, res: Response) => {
         query['offset'] = parseInt(req.query.page) * query['limit'];
     }
 
-    const threads = await Thread.findAll(query);
+    const threads: Thread[] | null = await Thread.findAll(query);
 
-    if(!threads.length) {
+    if(!threads.length)
         return res.sendStatus(404);
-    }
 
-    res.json({'threads': threads});
+    return res.json({'threads': threads});
 }
 
 export const deleteThread = async (req: Request, res: Response) => {
-    const result = await Thread.destroy({where: {id: req.query.id}});
-    if(!result) {
-        return res.sendStatus(404);
-    }
+    const result: number = await Thread.destroy({where: {id: req.query.id}});
 
-    res.sendStatus(204);
+    if(!result)
+        return res.sendStatus(404);
+
+    return res.sendStatus(204);
 }

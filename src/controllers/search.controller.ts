@@ -1,20 +1,16 @@
 import { Request, Response } from "express";
-
-import Category from '../models/Category'
-import Thread from "../models/Thread";
-
 import { Op } from 'sequelize';
-import Post from "../models/Post";
 
+import Thread from "../models/Thread";
+import Post from "../models/Post";
 import { processResults } from '../utils/search.utils';
 
 export const searchForum = async (req: Request, res: Response) => {
-    if(!req.query.text || req.query.text == "") {
+    if(!req.query.text || req.query.text == "")
         return res.sendStatus(400);
-    }
 
-    //search thread titles
-    const threadTitles = await Thread.findAll({
+    //Search thread titles
+    const threadTitles: Thread[] | null = await Thread.findAll({
         where: {
             title: {
                 [Op.like]: `%${req.query.text}%`
@@ -26,8 +22,8 @@ export const searchForum = async (req: Request, res: Response) => {
         ]
     });
 
-    //search thread text
-    const threadTexts = await Thread.findAll({
+    //Search thread text
+    const threadTexts: Thread[] | null = await Thread.findAll({
         where: {
             text: {
                 [Op.like]: `%${req.query.text}%`
@@ -39,8 +35,8 @@ export const searchForum = async (req: Request, res: Response) => {
         ]
     });
 
-    //search post text
-    const posts = await Post.findAll({
+    //Search post text
+    const posts: Post[] | null = await Post.findAll({
         where: {
             text: {
                 [Op.like]: `%${req.query.text}%`
@@ -53,11 +49,11 @@ export const searchForum = async (req: Request, res: Response) => {
     });
 
     const allResults = [...threadTitles, ...threadTexts, ...posts];
-    if(!allResults.length) {
+    if(!allResults.length)
         return res.sendStatus(404);
-    }
 
-    const processedResults = processResults(allResults, req.query.text);
+    //TODO Fix as string
+    const processedResults = processResults(allResults, req.query.text as string);
 
-    res.json(processedResults);
+    return res.json(processedResults);
 }

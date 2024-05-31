@@ -1,4 +1,4 @@
-import { Model, Table, Column, DataType, BeforeCreate, HasMany } from 'sequelize-typescript';
+import { Model, Table, Column, DataType, HasMany } from 'sequelize-typescript';
 
 import Thread from './Thread';
 

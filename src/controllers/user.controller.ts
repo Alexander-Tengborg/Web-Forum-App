@@ -1,33 +1,33 @@
 import { Request, Response } from "express";
 import passport from "passport";
-import { isEmail, isStrongPassword } from "validator";
 import { Op } from "sequelize";
 
 import User from "../models/User";
-
 import { validateUserData } from '../utils/user.utils';
 
 export const registerUser = async (req: Request, res: Response) => {
-    if(!validateUserData(req.body.email, req.body.username, req.body.password)) {
+    if(!validateUserData(req.body.email, req.body.username, req.body.password))
         return res.sendStatus(400);
-    }
 
-    const emailOrUsernameExists = await User.findOne({where: {[Op.or]: [{ email: req.body.email }, { username: req.body.username }]}});
-    if(emailOrUsernameExists) {
+    const emailOrUsernameExists: User | null = await User.findOne(
+        {where: {
+            [Op.or]: [
+                { email: req.body.email },
+                { username: req.body.username }
+            ]
+        }});
+
+    if(emailOrUsernameExists)
         return res.sendStatus(418);
-    }
 
-    //What happens if we get some error and the user does not get created?
-    const createdUser = await User.create(req.body);
+    await User.create(req.body);
     
-    if(createdUser) {
-        return res.status(201).send("Created");
-    }
+    return res.sendStatus(201);
 };
 
 //check err instead of user
 export const loginUser = (req: Request, res: Response) => {
-    passport.authenticate('local', (err, user, info, status) => {
+    passport.authenticate('local', (err: any, user: Express.User, info: any, status: any) => {
         if(!user) {
             console.log(err);
             return res.sendStatus(401);

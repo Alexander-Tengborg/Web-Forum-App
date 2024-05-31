@@ -1,15 +1,11 @@
 import 'dotenv/config';
 
-import express, { Express, Request, Response } from "express";
-import passport from 'passport';
+import express, { Express } from "express";
+import passport, { DoneCallback } from 'passport';
 import session from 'express-session';
 import cors from 'cors';
 
-import userRouter from "./routes/user.routes";
-import categoriesRouter from './routes/categories.routes';
-import threadRouter from './routes/thread.routes';
-import searchRouter from './routes/search.routes';
-import csvRouter from './routes/csv.routes';
+import router from './routes/routes';
 
 import database from './database';
 import { serializeUser, deserializeUser, localStrategy } from './passport.config';
@@ -36,14 +32,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(localStrategy());
-passport.serializeUser((user, done) => serializeUser(user, done));
-passport.deserializeUser((user: any, done) => deserializeUser(user, done));
+passport.serializeUser((user: Express.User, done: DoneCallback) => serializeUser(user, done));
+passport.deserializeUser((user: Express.User, done: DoneCallback) => deserializeUser(user, done));
 
-app.use('/user', userRouter);
-app.use('/categories', categoriesRouter);
-app.use('/thread', threadRouter);
-app.use('/search', searchRouter);
-app.use('/csv', csvRouter);
+app.use('/', router);
 
 //Syncs the database and runs the server
 (async () => {

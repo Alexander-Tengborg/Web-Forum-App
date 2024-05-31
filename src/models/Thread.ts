@@ -1,4 +1,5 @@
-import { Model, Table, Column, DataType, BeforeCreate, BelongsTo, ForeignKey, UpdatedAt, AllowNull, HasMany } from 'sequelize-typescript';
+import { Model, Table, Column, DataType, BelongsTo, ForeignKey, HasMany } from 'sequelize-typescript';
+
 import Category from './Category';
 import User from './User';
 import Post from './Post';
