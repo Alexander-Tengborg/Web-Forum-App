@@ -30,3 +30,16 @@ export const getCategories = async (req: Request, res: Response) => {
 
     res.json(categories);
 }
+
+export const deleteCategory = async (req: Request, res: Response) => {
+    if(req.query.category === 'Default') {
+        return res.sendStatus(400);
+    }
+
+    const result = await Category.destroy({where: {category_name: req.query.category}});
+    if(!result) {
+        return res.sendStatus(400);
+    }
+
+    res.sendStatus(200);
+}

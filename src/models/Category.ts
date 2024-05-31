@@ -19,7 +19,7 @@ class Category extends Model {
     })
     category_name!: string;
 
-    @HasMany(() => Thread, 'category')
+    @HasMany(() => Thread, {foreignKey:'category', onDelete: 'CASCADE', onUpdate: 'CASCADE'})
     threads!: Thread[];
 }
 

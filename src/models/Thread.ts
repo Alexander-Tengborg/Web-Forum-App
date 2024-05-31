@@ -29,7 +29,7 @@ class Thread extends Model {
     @ForeignKey(() => Category)
     category!: string;
 
-    @BelongsTo(() => Category, 'category')
+    @BelongsTo(() => Category, {foreignKey:'category', onDelete: 'CASCADE', onUpdate: 'CASCADE'})
     category_info!: Category
 
     @Column
