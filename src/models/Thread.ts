@@ -39,7 +39,7 @@ class Thread extends Model {
     @BelongsTo(() => User, 'author')
     author_info!: User
 
-    @HasMany(() => Post, 'threadId')
+    @HasMany(() => Post, {foreignKey:'threadId', onDelete: 'CASCADE', onUpdate: 'CASCADE'})
     posts!: Post[];
 }
 

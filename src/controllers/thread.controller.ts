@@ -83,3 +83,12 @@ export const getThreads = async (req: Request, res: Response) => {
 
     res.json({'threads': threads});
 }
+
+export const deleteThread = async (req: Request, res: Response) => {
+    const result = await Thread.destroy({where: {id: req.query.id}});
+    if(!result) {
+        return res.sendStatus(404);
+    }
+
+    res.sendStatus(204);
+}

@@ -23,7 +23,7 @@ class Post extends Model {
     @ForeignKey(() => Thread)
     threadId!: number;
 
-    @BelongsTo(() => Thread, 'threadId')
+    @BelongsTo(() => Thread, {foreignKey:'threadId', onDelete: 'CASCADE', onUpdate: 'CASCADE'})
     thread_info!: Thread
 
     @Column
