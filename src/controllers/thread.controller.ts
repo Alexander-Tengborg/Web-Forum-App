@@ -7,50 +7,79 @@ import Thread from "../models/Thread";
 import { Op } from 'sequelize';
 
 export const createThread = async (req: Request, res: Response) => {
+    if(!req.body.category || !req.body.title || !req.body.openingPost || !req.body.openingPost.text || req.body.title.length == 0) {
+        return res.sendStatus(400);
+    }
+
     const category = await Category.findOne({where: {category_name: req.body.category}});
     if(!category) {
         return res.sendStatus(404);
     }
-
-    console.log(req.user);
 
     let threadSettings = req.body;
 
     threadSettings.category = category.category_name;
     threadSettings.author = req.user;
     threadSettings.text = req.body.openingPost.text;
-    // threadSettings.
-
 
     const thread = await Thread.create(threadSettings);
+
     res.send(thread);
 }
 
 export const getThreads = async (req: Request, res: Response) => {
-    
-    if(!req.query.categories) {
-        return res.sendStatus(400);
-    }
+    let query = {};
 
-    let categories;
-    if(typeof req.query.categories === 'string') {
-        categories = [req.query.categories]; 
-    } else {
-        categories = req.query.categories;
-    }
+    if(req.query.categories) {
+        let categories: any;
 
-    for(const _category_name of categories) {
-        const category = await Category.findOne({where: {category_name: _category_name}});
-        if(!category) {
-            return res.sendStatus(404);
+        if(typeof req.query.categories === 'string') {
+            categories = [req.query.categories]; 
+        } else {
+            categories = req.query.categories;
         }
+        
+        query['where']['category'] = {
+            [Op.in]: categories
+        };
     }
 
-    // const c = await Category.findAll({where: {id: {[Op.in]: category_ids}}, include: Thread}, );
+    if(req.query.author) {
+        let authors: any;
+        if(typeof req.query.author === 'string') {
+            authors = [req.query.author]; 
+        } else {
+            authors = req.query.author;
+        }
+        
+        query['where']['author'] = {
+            [Op.in]: authors
+        };
+    }
 
-    const threads = await Thread.findAll({where: {category: {[Op.in]: categories}}});
+    if(req.query.newest_first == 'true') {
+        query['order'] = [
+            ['id', 'DESC']
+        ];
+    } else {
+        query['order'] = [
+            ['id', 'ASC']
+        ];  
+    }
 
-    // res.json(c);
+    if(
+        req.query.page_size && typeof req.query.page_size === 'string' && parseInt(req.query.page_size) &&
+        req.query.page && typeof req.query.page === 'string' && parseInt(req.query.page)
+    ) {
+        query['limit'] = parseInt(req.query.page_size);
+        query['offset'] = parseInt(req.query.page) * query['limit'];
+    }
+
+    const threads = await Thread.findAll(query);
+
+    if(!threads.length) {
+        return res.sendStatus(404);
+    }
 
     res.json({'threads': threads});
 }

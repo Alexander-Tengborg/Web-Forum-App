@@ -7,6 +7,10 @@ export const createCategories = async (req: Request, res: Response) => {
         return res.sendStatus(400);
     }
     
+    if(!Array.isArray(req.body.categories)) {
+        req.body.categories = [req.body.categories];
+    }
+
     for(const _category_name of req.body.categories) {
         const category = await Category.findOne({where: {category_name: _category_name}})
         if(category) {

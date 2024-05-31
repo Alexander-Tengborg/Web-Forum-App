@@ -34,7 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(localStrategy());
-passport.serializeUser((user: any, done) => serializeUser(user, done));
+passport.serializeUser((user, done) => serializeUser(user, done));
 passport.deserializeUser((user: any, done) => deserializeUser(user, done));
 
 app.use('/user', userRouter);

@@ -6,7 +6,7 @@ import { Op } from "sequelize";
 import User from "../models/User";
 
 export const registerUser = async (req: Request, res: Response) => {
-    if(!isEmail(req.body.email) || !isStrongPassword(req.body.password)) {
+    if(!req.body.email || !req.body.username || !req.body.password || !isEmail(req.body.email) || req.body.length < 5 || !isStrongPassword(req.body.password)) {
         return res.sendStatus(400);
     }
 
