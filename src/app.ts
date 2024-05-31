@@ -8,6 +8,7 @@ import cors from 'cors';
 import userRouter from "./routes/user.routes";
 import categoriesRouter from './routes/categories.routes';
 import threadRouter from './routes/thread.routes';
+import searchRouter from './routes/search.routes';
 
 import database from './database';
 import { serializeUser, deserializeUser, localStrategy } from './passport.config';
@@ -40,6 +41,7 @@ passport.deserializeUser((user: any, done) => deserializeUser(user, done));
 app.use('/user', userRouter);
 app.use('/categories', categoriesRouter);
 app.use('/thread', threadRouter);
+app.use('/search', searchRouter);
 
 
 //Syncs the database and runs the server

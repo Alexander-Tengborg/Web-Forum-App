@@ -18,10 +18,6 @@ export const createPosts = async (req: Request, res: Response) => {
     }
 
     for(const post_text of req.body.posts) {
-        console.log(post_text);
-        console.log(req.user);
-        console.log(req.body.threadId);
-
         await Post.create({text: post_text.text, author: req.user, threadId: req.body.threadId});
     }
 
@@ -34,6 +30,7 @@ export const getPosts = async (req: Request, res: Response) => {
     }
 
     const thread = await Thread.findOne({where: {id: req.query.thread_id}, include: {model: Post, attributes: ['author', 'text', 'createdAt']}});
+    
     if(!thread) {
         return res.sendStatus(404);
     }
